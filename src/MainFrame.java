@@ -22,6 +22,7 @@ public class MainFrame extends JFrame {
 
         add(mainPanel);
         cardLayout.show(mainPanel, "Login"); 
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -29,3 +30,4 @@ public class MainFrame extends JFrame {
         });
     }
 }
+
