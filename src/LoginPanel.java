@@ -8,21 +8,19 @@ import java.awt.geom.RoundRectangle2D;
 
 public class LoginPanel extends JPanel {
 
-    // Palet Warna (Sama dengan Menu & Leaderboard)
-    private final Color BG_COLOR = new Color(220, 245, 235); // Hijau Mint
+    private final Color BG_COLOR = new Color(220, 245, 235);
     private final Color TEXT_COLOR = new Color(50, 50, 50);
     private final Color ACCENT_BLACK = Color.BLACK;
 
     public LoginPanel(MainFrame frame) {
-        setLayout(new GridBagLayout()); // Gunakan GridBag agar posisi tepat di tengah
+        setLayout(new GridBagLayout());
         setBackground(BG_COLOR);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 0, 10, 0); // Jarak antar elemen
+        gbc.insets = new Insets(10, 0, 10, 0);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
 
-        // --- 1. HEADER (LOGO & JUDUL) ---
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerPanel.setBackground(BG_COLOR);
         
@@ -38,18 +36,16 @@ public class LoginPanel extends JPanel {
         headerPanel.add(titleLabel);
 
         gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, 30, 0); // Jarak lebih besar di bawah judul
+        gbc.insets = new Insets(0, 0, 30, 0);
         add(headerPanel, gbc);
 
-        // --- 2. INPUT USERNAME ---
         addLabel("Username", gbc, 1);
         
         JTextField userField = new RoundedTextField(20);
         gbc.gridy = 2;
-        gbc.ipady = 10; // Tinggi input field
+        gbc.ipady = 10;
         add(userField, gbc);
 
-        // --- 3. INPUT PASSWORD ---
         addLabel("Password", gbc, 3);
         
         JPasswordField passField = new RoundedPasswordField(20);
@@ -57,23 +53,17 @@ public class LoginPanel extends JPanel {
         gbc.ipady = 10;
         add(passField, gbc);
 
-        // --- 4. TOMBOL LOGIN (Hitam Full) ---
         RoundedButton btnLogin = new RoundedButton("MASUK", true);
         gbc.gridy = 5;
-        gbc.insets = new Insets(30, 0, 10, 0); // Jarak agak jauh dari input
-        gbc.ipady = 15; // Tombol lebih tinggi
+        gbc.insets = new Insets(30, 0, 10, 0);
+        gbc.ipady = 15;
         add(btnLogin, gbc);
 
-        // --- 5. TOMBOL REGISTER (Outline/Putih) ---
         RoundedButton btnRegister = new RoundedButton("DAFTAR AKUN BARU", false);
         gbc.gridy = 6;
         gbc.insets = new Insets(0, 0, 0, 0);
         add(btnRegister, gbc);
 
-        // ==========================================
-        // LOGIKA TOMBOL (Sama seperti sebelumnya)
-        // ==========================================
-        
         btnLogin.addActionListener(e -> {
             String user = userField.getText();
             String pass = new String(passField.getPassword());
@@ -87,7 +77,7 @@ public class LoginPanel extends JPanel {
             if (dao.login(user, pass)) {
                 MainFrame.currentUser = user;
                 MainFrame.cardLayout.show(MainFrame.mainPanel, "Menu");
-                userField.setText(""); passField.setText(""); // Reset
+                userField.setText(""); passField.setText("");
             } else {
                 JOptionPane.showMessageDialog(this, "Login Gagal! Cek username/password.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -113,26 +103,21 @@ public class LoginPanel extends JPanel {
         });
     }
 
-    // Helper untuk menambah Label
     private void addLabel(String text, GridBagConstraints gbc, int yPos) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.BOLD, 14));
         label.setForeground(TEXT_COLOR);
         gbc.gridy = yPos;
-        gbc.insets = new Insets(15, 5, 5, 0); // Jarak atas bawah label
+        gbc.insets = new Insets(15, 5, 5, 0);
         gbc.ipady = 0;
         add(label, gbc);
     }
 
-    // ========================================================
-    // CLASS CUSTOM: ROUNDED TEXT FIELD
-    // ========================================================
     class RoundedTextField extends JTextField {
         public RoundedTextField(int columns) {
             super(columns);
-            setOpaque(false); // Agar background rounded tergambar
+            setOpaque(false);
             setFont(new Font("Arial", Font.PLAIN, 14));
-            // Margin di dalam teks (Padding)
             setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         }
 
@@ -141,11 +126,9 @@ public class LoginPanel extends JPanel {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             
-            // Background Putih Rounded
             g2.setColor(Color.WHITE);
             g2.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
             
-            // Border Tipis Abu-abu
             g2.setColor(new Color(200, 200, 200));
             g2.draw(new RoundRectangle2D.Double(0, 0, getWidth()-1, getHeight()-1, 20, 20));
             
@@ -154,9 +137,6 @@ public class LoginPanel extends JPanel {
         }
     }
 
-    // ========================================================
-    // CLASS CUSTOM: ROUNDED PASSWORD FIELD
-    // ========================================================
     class RoundedPasswordField extends JPasswordField {
         public RoundedPasswordField(int columns) {
             super(columns);
@@ -178,9 +158,6 @@ public class LoginPanel extends JPanel {
         }
     }
 
-    // ========================================================
-    // CLASS CUSTOM: ROUNDED BUTTON (Login Style)
-    // ========================================================
     class RoundedButton extends JButton {
         private boolean isPrimary;
         private Color normalColor;
@@ -196,12 +173,10 @@ public class LoginPanel extends JPanel {
             setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             if (isPrimary) {
-                // Tombol LOGIN: Hitam -> Abu Tua
                 setForeground(Color.WHITE);
                 normalColor = ACCENT_BLACK;
                 hoverColor = new Color(60, 60, 60);
             } else {
-                // Tombol DAFTAR: Putih/Mint -> Abu Muda
                 setForeground(ACCENT_BLACK);
                 normalColor = Color.WHITE;
                 hoverColor = new Color(240, 240, 240);
@@ -227,7 +202,6 @@ public class LoginPanel extends JPanel {
             g2.setColor(normalColor);
             g2.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
 
-            // Jika tombol sekunder (Register), beri border tipis
             if (!isPrimary) {
                 g2.setColor(new Color(200, 200, 200));
                 g2.draw(new RoundRectangle2D.Double(0, 0, getWidth()-1, getHeight()-1, 20, 20));
