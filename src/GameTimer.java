@@ -11,11 +11,9 @@ public class GameTimer implements Runnable {
         this.isRunning = true;
     }
 
-    // --- TAMBAHKAN METHOD INI ---
     public int getTimeRemaining() {
         return timeRemaining;
     }
-    // ----------------------------
 
     public void stopTimer() {
         isRunning = false;

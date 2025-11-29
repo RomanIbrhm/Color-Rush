@@ -1,69 +1,62 @@
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 
 public class LoginPanel extends JPanel {
 
-    private final Color BG_COLOR = new Color(220, 245, 235);
-    private final Color TEXT_COLOR = new Color(50, 50, 50);
-    private final Color ACCENT_BLACK = Color.BLACK;
-
     public LoginPanel(MainFrame frame) {
-        setLayout(new GridBagLayout());
-        setBackground(BG_COLOR);
+        setLayout(new GridBagLayout()); 
+        setBackground(Theme.BG_COLOR);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.insets = new Insets(10, 0, 10, 0); 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
 
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        headerPanel.setBackground(BG_COLOR);
+        headerPanel.setBackground(Theme.BG_COLOR);
         
         JLabel logoIcon = new JLabel("🎨");
-        logoIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
+        logoIcon.setFont(Theme.FONT_ICON);
+        logoIcon.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         
-        JLabel titleLabel = new JLabel("COLOR RUSH");
-        titleLabel.setFont(new Font("Verdana", Font.BOLD, 28));
-        titleLabel.setForeground(ACCENT_BLACK);
+        JLabel titleLabel = new JLabel("COLOR HUNTER");
+        titleLabel.setFont(Theme.FONT_HEADER);
+        titleLabel.setForeground(Theme.TEXT_MAIN);
 
         headerPanel.add(logoIcon);
         headerPanel.add(Box.createHorizontalStrut(10));
         headerPanel.add(titleLabel);
 
         gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, 30, 0);
+        gbc.insets = new Insets(0, 0, 30, 0); 
         add(headerPanel, gbc);
 
-        addLabel("Username", gbc, 1);
+        addLabel("Username : ", gbc, 1);
         
         JTextField userField = new RoundedTextField(20);
         gbc.gridy = 2;
-        gbc.ipady = 10;
+        gbc.ipady = 10; 
         add(userField, gbc);
 
-        addLabel("Password", gbc, 3);
+        addLabel("Password : ", gbc, 3);
         
         JPasswordField passField = new RoundedPasswordField(20);
         gbc.gridy = 4;
         gbc.ipady = 10;
         add(passField, gbc);
 
-        RoundedButton btnLogin = new RoundedButton("MASUK", true);
+        JButton btnLogin = Theme.createButton("MASUK", 200, 25, Color.BLACK, Theme.HOVER1, Color.WHITE, 20);
         gbc.gridy = 5;
-        gbc.insets = new Insets(30, 0, 10, 0);
-        gbc.ipady = 15;
+        gbc.insets = new Insets(30, 0, 10, 0); 
+        gbc.ipady = 15; 
         add(btnLogin, gbc);
 
-        RoundedButton btnRegister = new RoundedButton("DAFTAR AKUN BARU", false);
+        JButton btnRegister = Theme.createButton("DAFTAR", 200, 25, Color.WHITE, Theme.HOVER2, Theme.TEXT_MAIN, 20);
         gbc.gridy = 6;
         gbc.insets = new Insets(0, 0, 0, 0);
         add(btnRegister, gbc);
-
+        
         btnLogin.addActionListener(e -> {
             String user = userField.getText();
             String pass = new String(passField.getPassword());
@@ -77,7 +70,7 @@ public class LoginPanel extends JPanel {
             if (dao.login(user, pass)) {
                 MainFrame.currentUser = user;
                 MainFrame.cardLayout.show(MainFrame.mainPanel, "Menu");
-                userField.setText(""); passField.setText("");
+                userField.setText(""); passField.setText(""); 
             } else {
                 JOptionPane.showMessageDialog(this, "Login Gagal! Cek username/password.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -105,10 +98,10 @@ public class LoginPanel extends JPanel {
 
     private void addLabel(String text, GridBagConstraints gbc, int yPos) {
         JLabel label = new JLabel(text);
-        label.setFont(new Font("Arial", Font.BOLD, 14));
-        label.setForeground(TEXT_COLOR);
+        label.setFont(Theme.FONT_LABEL);
+        label.setForeground(Theme.TEXT_COLOR);
         gbc.gridy = yPos;
-        gbc.insets = new Insets(15, 5, 5, 0);
+        gbc.insets = new Insets(15, 5, 5, 0); 
         gbc.ipady = 0;
         add(label, gbc);
     }
@@ -116,8 +109,8 @@ public class LoginPanel extends JPanel {
     class RoundedTextField extends JTextField {
         public RoundedTextField(int columns) {
             super(columns);
-            setOpaque(false);
-            setFont(new Font("Arial", Font.PLAIN, 14));
+            setOpaque(false); 
+            setFont(Theme.FONT_LABEL);
             setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         }
 
@@ -141,7 +134,7 @@ public class LoginPanel extends JPanel {
         public RoundedPasswordField(int columns) {
             super(columns);
             setOpaque(false);
-            setFont(new Font("Arial", Font.PLAIN, 14));
+            setFont(Theme.FONT_LABEL);
             setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         }
 
@@ -153,60 +146,6 @@ public class LoginPanel extends JPanel {
             g2.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
             g2.setColor(new Color(200, 200, 200));
             g2.draw(new RoundRectangle2D.Double(0, 0, getWidth()-1, getHeight()-1, 20, 20));
-            super.paintComponent(g);
-            g2.dispose();
-        }
-    }
-
-    class RoundedButton extends JButton {
-        private boolean isPrimary;
-        private Color normalColor;
-        private Color hoverColor;
-
-        public RoundedButton(String text, boolean isPrimary) {
-            super(text);
-            this.isPrimary = isPrimary;
-            setContentAreaFilled(false);
-            setFocusPainted(false);
-            setBorderPainted(false);
-            setFont(new Font("Arial", Font.BOLD, 14));
-            setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-            if (isPrimary) {
-                setForeground(Color.WHITE);
-                normalColor = ACCENT_BLACK;
-                hoverColor = new Color(60, 60, 60);
-            } else {
-                setForeground(ACCENT_BLACK);
-                normalColor = Color.WHITE;
-                hoverColor = new Color(240, 240, 240);
-            }
-
-            addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e) { 
-                    normalColor = hoverColor; 
-                    repaint(); 
-                }
-                public void mouseExited(MouseEvent e) { 
-                    normalColor = isPrimary ? ACCENT_BLACK : Color.WHITE; 
-                    repaint(); 
-                }
-            });
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            g2.setColor(normalColor);
-            g2.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
-
-            if (!isPrimary) {
-                g2.setColor(new Color(200, 200, 200));
-                g2.draw(new RoundRectangle2D.Double(0, 0, getWidth()-1, getHeight()-1, 20, 20));
-            }
-
             super.paintComponent(g);
             g2.dispose();
         }

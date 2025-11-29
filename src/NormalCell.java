@@ -7,6 +7,6 @@ public class NormalCell extends Cell {
 
     @Override
     public boolean onClick() {
-        return false; // Salah tebak
+        return false; 
     }
 }

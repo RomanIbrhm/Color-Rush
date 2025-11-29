@@ -6,27 +6,27 @@ import java.awt.geom.RoundRectangle2D;
 public class ResultDialog extends JDialog {
 
     public ResultDialog(JFrame parent, boolean isWin, int levelReached, double totalTime) {
-        super(parent, "Hasil Permainan", true);
-        setUndecorated(true);
+        super(parent, "Hasil Permainan", true); 
+        setUndecorated(true); 
         setSize(400, 450);
         setLocationRelativeTo(parent);
-        setBackground(new Color(0, 0, 0, 0));
+        setBackground(new Color(0, 0, 0, 0)); 
 
         JPanel contentPanel = new RoundedPanel(25);
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
         
-        Color themeColor = isWin ? new Color(60, 179, 113) : new Color(220, 53, 69);
+        Color themeColor = isWin ? Theme.WIN : Theme.LOSE; 
         String titleText = isWin ? "LUAR BIASA!" : "GAME OVER";
         String iconText = isWin ? "🏆" : "⏳";
         String descText = isWin ? "Semua level berhasil diselesaikan!" : "Waktu habis atau salah pilih.";
-
+ 
         double avgTime = totalTime / (levelReached == 0 ? 1 : levelReached);
 
-
         JLabel iconLabel = new JLabel(iconText);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 60));
+        iconLabel.setFont(Theme.FONT_ICON);
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        iconLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
         JLabel titleLabel = new JLabel(titleText);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
@@ -34,7 +34,7 @@ public class ResultDialog extends JDialog {
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel descLabel = new JLabel(descText);
-        descLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        descLabel.setFont(Theme.FONT_LABEL);
         descLabel.setForeground(Color.GRAY);
         descLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -47,8 +47,7 @@ public class ResultDialog extends JDialog {
         addStat(statsPanel, "Total Waktu:", String.format("%.1f detik", totalTime));
         addStat(statsPanel, "Rata-rata:", String.format("%.1f s / level", avgTime));
 
-        JButton btnClose = new JButton("KEMBALI KE MENU");
-        styleButton(btnClose, themeColor);
+        JButton btnClose = Theme.createButton("KEMBALI KE MENU", 300, 45, themeColor, themeColor.darker(), Color.WHITE, 16);
         btnClose.addActionListener(e -> dispose()); 
 
         contentPanel.add(iconLabel);
@@ -66,26 +65,15 @@ public class ResultDialog extends JDialog {
 
     private void addStat(JPanel panel, String label, String value) {
         JLabel l = new JLabel(label);
-        l.setFont(new Font("Arial", Font.PLAIN, 14));
+        l.setFont(Theme.FONT_LABEL);
         l.setForeground(Color.DARK_GRAY);
         
         JLabel v = new JLabel(value, SwingConstants.RIGHT);
-        v.setFont(new Font("Arial", Font.BOLD, 14));
+        v.setFont(Theme.FONT_LABEL);
         v.setForeground(Color.BLACK);
         
         panel.add(l);
         panel.add(v);
-    }
-
-    private void styleButton(JButton btn, Color color) {
-        btn.setFont(new Font("Arial", Font.BOLD, 14));
-        btn.setBackground(color);
-        btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn.setMaximumSize(new Dimension(300, 45));
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
     class RoundedPanel extends JPanel {

@@ -7,6 +7,6 @@ public class TargetCell extends Cell {
 
     @Override
     public boolean onClick() {
-        return true; // Benar
+        return true; 
     }
 }
