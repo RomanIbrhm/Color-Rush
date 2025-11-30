@@ -49,82 +49,103 @@ public class GameDAO {
     
 
     public LevelData getLevel(int stage) {
-    LevelData levelData = null;
-    Connection conn = DBConnection.getConnection();
-    if (conn == null) return null;
+        LevelData levelData = null;
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return null;
 
-    try {
-        String query = "SELECT * FROM level_pool WHERE level_stage = ? ORDER BY RAND() LIMIT 1";
-        
-        PreparedStatement ps = conn.prepareStatement(query);
-        ps.setInt(1, stage);
-        ResultSet rs = ps.executeQuery();
+        try {
+            String query = "SELECT * FROM level_pool WHERE level_stage = ? ORDER BY RAND() LIMIT 1";
+            
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, stage);
+            ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
-            levelData = new LevelData(
-                rs.getInt("level_stage"), 
-                rs.getInt("grid_size"),
-                rs.getString("base_color"),
-                rs.getString("target_color"),
-                rs.getInt("time_limit")
-            );
+            if (rs.next()) {
+                levelData = new LevelData(
+                    rs.getInt("level_stage"), 
+                    rs.getInt("grid_size"),
+                    rs.getString("base_color"),
+                    rs.getString("target_color"),
+                    rs.getInt("time_limit")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return levelData;
     }
-    return levelData;
-}
 
-    public void saveScore(String username, int score, double totalTime) {
+    public int getUserId(String username) {
         try (Connection conn = DBConnection.getConnection()) {
-            if (conn == null) return;
-            String query = "INSERT INTO leaderboard (username, score, total_time) VALUES (?, ?, ?)";
+            String query = "SELECT id FROM users WHERE username = ?";
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, username);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+
+    public void saveScore(int userId, int score, double totalTime, int levelReached) {
+        try (Connection conn = DBConnection.getConnection()) {
+            if (conn == null) return;
+
+            String query = "INSERT INTO leaderboard (user_id, score, level_reached, total_time) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(query);
+
+            ps.setInt(1, userId);
             ps.setInt(2, score);
-            ps.setDouble(3, totalTime);
+            ps.setInt(3, levelReached);
+            ps.setDouble(4, totalTime);
+
             ps.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<String> getLeaderboard() {
         List<String> list = new ArrayList<>();
-        
+
         try (Connection conn = DBConnection.getConnection()) {
             if (conn == null) return list;
-            
+
             String query = """
-                SELECT u.username, l.score, l.total_time 
+                SELECT u.username, l.score, l.level_reached, l.total_time 
                 FROM leaderboard l
                 JOIN users u ON l.user_id = u.id
                 ORDER BY l.score DESC, l.total_time ASC
                 LIMIT 10
             """;
-            
+
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
-            
+
             int rank = 1;
             while (rs.next()) {
                 String username = rs.getString("username");
                 int score = rs.getInt("score");
+                int levelReached = rs.getInt("level_reached");
                 double totalTime = rs.getDouble("total_time");
 
-                double avgTime = (score > 0) ? (totalTime / score) : 0.0;
-
                 list.add(String.format(
-                    "%d. %s - Lvl %d (Total: %.1fs | Avg: %.1fs)",
-                    rank, username, score, totalTime, avgTime
+                    "%d. %s -Score: %d  |  Level: %d  |  Time: %.1fs",
+                    rank, username, score, levelReached, totalTime
                 ));
-                
+
                 rank++;
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return list;
     }
-
 }

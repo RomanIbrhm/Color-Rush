@@ -1,11 +1,11 @@
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class ResultDialog extends JDialog {
 
-    public ResultDialog(JFrame parent, boolean isWin, int levelReached, double totalTime) {
+    public ResultDialog(JFrame parent, boolean isWin, int levelReached, double totalTime, int score) {
         super(parent, "Hasil Permainan", true); 
         setUndecorated(true); 
         setSize(400, 450);
@@ -20,8 +20,6 @@ public class ResultDialog extends JDialog {
         String titleText = isWin ? "LUAR BIASA!" : "GAME OVER";
         String iconText = isWin ? "🏆" : "⏳";
         String descText = isWin ? "Semua level berhasil diselesaikan!" : "Waktu habis atau salah pilih.";
- 
-        double avgTime = totalTime / (levelReached == 0 ? 1 : levelReached);
 
         JLabel iconLabel = new JLabel(iconText);
         iconLabel.setFont(Theme.FONT_ICON);
@@ -45,7 +43,7 @@ public class ResultDialog extends JDialog {
         
         addStat(statsPanel, "Level Selesai:", String.valueOf(levelReached));
         addStat(statsPanel, "Total Waktu:", String.format("%.1f detik", totalTime));
-        addStat(statsPanel, "Rata-rata:", String.format("%.1f s / level", avgTime));
+        addStat(statsPanel, "Score:", String.valueOf(score));
 
         JButton btnClose = Theme.createButton("KEMBALI KE MENU", 300, 45, themeColor, themeColor.darker(), Color.WHITE, 16);
         btnClose.addActionListener(e -> dispose()); 

@@ -1,8 +1,8 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import javax.swing.*;
 
 public class GamePanel extends JPanel {
     private ArrayList<Cell> gridCells;
@@ -13,6 +13,7 @@ public class GamePanel extends JPanel {
     private Thread timerThread;
     private double totalTimePlayed = 0.0; 
     private int currentLevelTimeLimit = 0; 
+    private int score = 0;
     
     private MainFrame mainFrame;
     private GameDAO dao;
@@ -75,6 +76,7 @@ public class GamePanel extends JPanel {
     public void startGame() {
         currentLevelId = 1;
         totalTimePlayed = 0.0; 
+        score = 0;
         startCountdownAndLoadLevel();
     }
 
@@ -166,14 +168,16 @@ public class GamePanel extends JPanel {
         for (Cell cell : gridCells) {
             if (cell.isClicked(x, y)) {
                 if (cell.onClick()) {
-                    int timeRemaining = gameTimer.getTimeRemaining(); 
+                    int timeRemaining = gameTimer.getTimeRemaining();
+
+                    int bonusWaktu = timeRemaining * 5;
+                    score += (currentLevelId * 100) + bonusWaktu;
+
                     int timeSpent = currentLevelTimeLimit - timeRemaining;
-                    
                     totalTimePlayed += Math.max(0, timeSpent);
 
                     currentLevelId++;
-                    loadLevel(); 
-
+                    loadLevel();
                 } else {
                     gameOver();
                 }
@@ -183,7 +187,10 @@ public class GamePanel extends JPanel {
     }
 
     public void updateTime(int time) {
-        infoLabel.setText(String.format("LEVEL: %d  |  WAKTU: %ds  |  TOTAL: %.0fs", currentLevelId, time, totalTimePlayed));
+        infoLabel.setText(String.format(
+            "LEVEL: %d  |  WAKTU: %ds  |  SCORE: %d",
+            currentLevelId, time, score
+        ));
     }
 
     public void gameOver() {
@@ -204,10 +211,11 @@ public class GamePanel extends JPanel {
             gameSound.playSoundEffect("assets/sound_kalah.wav");
         }
 
-        dao.saveScore(MainFrame.currentUser, levelReached, totalTimePlayed);
+        int userId = dao.getUserId(MainFrame.currentUser);
+        dao.saveScore(userId, score, totalTimePlayed,levelReached);
 
         SwingUtilities.invokeLater(() -> {
-            new ResultDialog(mainFrame, isWin, levelReached, totalTimePlayed).setVisible(true);
+            new ResultDialog(mainFrame, isWin, levelReached, totalTimePlayed, score).setVisible(true);
             MainFrame.cardLayout.show(MainFrame.mainPanel, "Menu");
         });
     }
