@@ -88,27 +88,43 @@ public class GameDAO {
     }
 
     public List<String> getLeaderboard() {
-    List<String> list = new ArrayList<>();
-    try (Connection conn = DBConnection.getConnection()) {
-        if (conn == null) return list;
+        List<String> list = new ArrayList<>();
         
-        String query = "SELECT username, score, total_time FROM leaderboard ORDER BY score DESC, total_time ASC LIMIT 10";
-        
-        PreparedStatement ps = conn.prepareStatement(query);
-        ResultSet rs = ps.executeQuery();
-        int rank = 1;
-        while (rs.next()) {
-            String user = rs.getString("username");
-            int lvl = rs.getInt("score");
-            double totalTime = rs.getDouble("total_time");
+        try (Connection conn = DBConnection.getConnection()) {
+            if (conn == null) return list;
             
-            double avgTime = (lvl > 0) ? (totalTime / lvl) : 0.0;
+            String query = """
+                SELECT u.username, l.score, l.total_time 
+                FROM leaderboard l
+                JOIN users u ON l.user_id = u.id
+                ORDER BY l.score DESC, l.total_time ASC
+                LIMIT 10
+            """;
+            
+            PreparedStatement ps = conn.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            
+            int rank = 1;
+            while (rs.next()) {
+                String username = rs.getString("username");
+                int score = rs.getInt("score");
+                double totalTime = rs.getDouble("total_time");
 
-            list.add(String.format("%d. %s - Lvl %d (Total: %.1fs | Avg: %.1fs)", 
-                rank, user, lvl, totalTime, avgTime));
-            rank++;
+                double avgTime = (score > 0) ? (totalTime / score) : 0.0;
+
+                list.add(String.format(
+                    "%d. %s - Lvl %d (Total: %.1fs | Avg: %.1fs)",
+                    rank, username, score, totalTime, avgTime
+                ));
+                
+                rank++;
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) { e.printStackTrace(); }
-    return list;
-}
+        
+        return list;
+    }
+
 }

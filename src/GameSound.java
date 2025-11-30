@@ -28,4 +28,21 @@ public class GameSound {
         }
     }
 
+    public void playSoundEffect(String filePath) {
+        new Thread(() -> { 
+            try {
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File(filePath));
+                Clip effectClip = AudioSystem.getClip();
+                effectClip.open(audioStream);
+                effectClip.start();
+
+                Thread.sleep(effectClip.getMicrosecondLength() / 1000);
+                effectClip.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
 }

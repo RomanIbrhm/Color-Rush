@@ -198,6 +198,12 @@ public class GamePanel extends JPanel {
 
         int levelReached = currentLevelId - 1;
 
+        if (isWin) {
+            gameSound.playSoundEffect("assets/sound_menang.wav");
+        } else {
+            gameSound.playSoundEffect("assets/sound_kalah.wav");
+        }
+
         dao.saveScore(MainFrame.currentUser, levelReached, totalTimePlayed);
 
         SwingUtilities.invokeLater(() -> {
